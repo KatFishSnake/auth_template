@@ -2,6 +2,7 @@ var path = require("path");
 var express = require("express");
 var app = express();
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
 var mongoose = require('mongoose');
 var passport = require('passport');
@@ -12,10 +13,13 @@ var jwt = require('jwt-simple');
 
 var apiRoutes = require("./config/api-routes");
 var appRoutes = require("./config/app-routes");
+var protectedRoutes = require("./config/protected-routes");
 
 // get requests params
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use(cookieParser());
 
 // log to console
 app.use(morgan("dev"));
@@ -34,6 +38,7 @@ require("./config/passport")(passport);
 
 app.use("/", appRoutes);
 app.use("/api", apiRoutes);
+app.use("/api/p", protectedRoutes);
 
 app.listen(port);
 console.log('There will be dragons: http://localhost:' + port);

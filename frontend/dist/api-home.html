@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Loading Bootstrap -->
+    <link href="/dist/css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Loading Flat UI -->
+    <link href="/dist/css/flat-ui.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/dist/img/favicon.ico">
+    <style type="text/css">
+    body .container {
+        max-width: 40rem;
+        padding-top: 10rem;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <h4>Hello! &#128521</h4>
+                <button id="login_bt" value="Login" class="btn btn-lg btn-primary btn-block">Log In</button>
+                <button id="signup_bt" value="Signup" class="btn btn-lg btn-default btn-block">Sign Up</button>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery (necessary for Flat UI's JavaScript plugins) -->
+    <script src="/dist/js/vendor/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/dist/js/vendor/video.js"></script>
+    <script src="/dist/js/flat-ui.min.js"></script>
+    <script type="text/javascript">
+    (function() {
+        var lg_el = document.getElementById("login_bt");
+        var sup_el = document.getElementById("signup_bt");
+
+        function setListeners() {
+            lg_el.addEventListener("click", function(e) {
+                e.preventDefault();
+                window.location = "/api/login";
+            });
+
+            sup_el.addEventListener("click", function(e) {
+                e.preventDefault();
+                window.location = "/api/signup";
+            });
+        }
+
+        // Set all listeners on load
+        setListeners();
+    })();
+    </script>
+</body>
+
+</html>

@@ -9,21 +9,9 @@ var jwt = require('jwt-simple');
 // bundle our routes
 var apiRoutes = express.Router();
 
-// parse out the auth token out of request headers
-var getToken = function (headers) {
-    if (headers && headers.authorization) {
-        var parted = headers.authorization.split(" ");
-        return ((parted.length === 2) ? parted[1] : null);
-    }
-    else {
-        return null;
-    }
-}
-
 // demo route get base
 apiRoutes.get("/", function(req, res) {
-    // Check local storage for tocken, then validate it if its there
-    res.redirect("/login");
+    res.sendFile(path.resolve("./frontend/dist/api-home.html"));
 });
 
 // demo route get base
@@ -31,38 +19,19 @@ apiRoutes.get("/login", function(req, res) {
     res.sendFile(path.resolve("./frontend/dist/admin-login.html"));
 });
 
+apiRoutes.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/api/login');
+});
+
 // demo route get base
 apiRoutes.get("/signup", function(req, res) {
     res.sendFile(path.resolve("./frontend/dist/admin-signup.html"));
 });
 
-// protected routes
-apiRoutes.get("/p/list", passport.authenticate("jwt", { session: false }), function(req, res) {
-    var token = getToken(req.headers);
-    if (token) {
-        var decoded = jwt.decode(token, config.secret);
-        Admin.findOne({
-            name: decoded.name
-        }, function(err, admin) {
-            if (err) {
-                throw err; 
-            }
-
-            if (!admin) {
-                return res.status(403).send({ success: false, msg: 'Authentication failed.' });
-            } else {
-
-                // Can be redirected here, its basicly the entrance to secured area
-                res.json({ success: true, msg: 'Welcome to api list ' + admin.name + '!' });
-            }
-        });
-    } else {
-        return res.status(403).send({ success: false, msg: "No token provided." });
-    }
-});
 
 // authenticate admin for API list
-apiRoutes.post("/admin-login", function(req, res) {
+apiRoutes.post("/login", function(req, res) {
     Admin.findOne({
         name: req.body.name
     }, function(err, admin) {
@@ -88,14 +57,14 @@ apiRoutes.post("/admin-login", function(req, res) {
 });
 
 // create a new admin account (POST localhost:5000/api/admin-signup)
-apiRoutes.post("/admin-signup", function(req, res) {
+apiRoutes.post("/signup", function(req, res) {
     if (!req.body.name || !req.body.password || !req.body.key) {
         res.json({ success: false, msg: "Please pass name, password and secret key." });
     } else {
 
         if (config.adminkey.toString() !== req.body.key.toString()) {
             return res.json({ success: false, msg: "Need a valid secret key." });
-            throw err; 
+            throw err;
         }
 
         var newAdmin = new Admin({

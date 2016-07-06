@@ -1,52 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Flat UI Free 101 Template</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<head>
+    <meta charset="utf-8">
+    <title>SignUp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Loading Bootstrap -->
     <link href="/dist/css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Loading Flat UI -->
     <link href="/dist/css/flat-ui.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/dist/img/favicon.ico">
+    <style type="text/css">
+      body .container {
+        max-width: 40rem;
+        padding-top: 10rem;
+      }
+    </style>
+</head>
 
-    <link rel="shortcut icon" href="img/favicon.ico">
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
-    <!--[if lt IE 9]>
-      <script src="js/vendor/html5shiv.js"></script>
-      <script src="js/vendor/respond.min.js"></script>
-    <![endif]-->
-  </head>
-  <body>
+<body>
     <div class="container">
-      <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-
-          <h4>Please SignUp</h4>
-          <form role="form">
-            <div class="form-group">
-              <label for="exampleInputEmail1">Email address</label>
-              <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+        <div class="row" >
+            <div class="col-md-6 col-md-offset-3">
+                <h4>Please SignUp</h4>
+                <form role="form" id="signup-form" action="" name="signup-form" autocomplete="off">
+                    <div class="form-group">
+                        <input type="text" name="username" autocomplete="off" class="form-control" placeholder="Enter name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password" autocomplete="off" class="form-control" placeholder="Password" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="secret" name="secret" autocomplete="off" class="form-control" placeholder="Secret admin key" required>
+                    </div>
+                    <button type="submit" value="SignUpInfo" class="btn btn-lg btn-primary btn-block">Sign Up</button>
+                </form>
             </div>
-            <div class="form-group">
-              <label for="exampleInputPassword1">Password</label>
-              <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-            </div>
-            <button id="sign-up" type="submit" class="btn btn-hg btn-primary">Sign Up</button>
-          </form>
-        </div><!-- /.col-md-12 -->
-      </div><!-- /.row -->
-
+        </div>
     </div>
-
-
     <!-- jQuery (necessary for Flat UI's JavaScript plugins) -->
     <script src="/dist/js/vendor/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/dist/js/vendor/video.js"></script>
     <script src="/dist/js/flat-ui.min.js"></script>
+    <script type="text/javascript">
+    (function() {
+        var form_el = document.getElementById("signup-form");
 
-  </body>
+        /**
+         * Sanitize text string
+         */
+        function sanitizeText(str) {
+            return str.toString().replace(/[^\w\s\-\d]/gi, '');
+        }
+
+        function setToken(token) {
+            if (!navigator.cookieEnabled) {
+                alert("Please enable cookie in your browser");
+                return;
+            }
+
+            // var path = "/api/p/";
+            // var cookie_str = "jwt=" + token + ";max-age=" + (5 * 60) + ";";
+
+            // document.cookie = cookie_str;
+            // console.info("User is logged in");
+
+            // window.location = "/api/p/list";
+        }
+
+        /**
+         *  Signup user information
+         */
+        function signup(content) {
+            var url = "/api/signup";
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+
+            //Send the proper header information along with the request
+            xhr.setRequestHeader("Content-type", "application/json");
+
+            xhr.onload = function() {
+                var res = JSON.parse(this.responseText);
+
+                if (res.success) {
+                    var conf = confirm(res.msg);
+                    if (conf) { window.location = "/api/login" } 
+                } else {
+                    alert(res.msg);
+                }
+            };
+            xhr.send(content);
+        }
+
+        function setListeners() {
+            form_el.addEventListener("submit", function(e) {
+
+                // Get values
+                var values = {
+                    name: sanitizeText(form_el.username.value),
+                    password: sanitizeText(form_el.password.value),
+                    key: sanitizeText(form_el.secret.value)
+                };
+
+                // Set form prestine
+                form_el.username.value = "";
+                form_el.password.value = "";
+                form_el.secret.value = "";
+
+                e.preventDefault();
+
+                // Send an email to the host
+                signup(JSON.stringify(values));
+            });
+        }
+
+        // Set all listeners on load
+        setListeners();
+    })();
+    </script>
+</body>
+
 </html>

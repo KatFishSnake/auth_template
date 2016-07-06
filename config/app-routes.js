@@ -8,6 +8,10 @@ var jwt = require('jwt-simple');
 // bundle our routes
 var appRoutes = express.Router();
 
+appRoutes.get("/", function(req, res) {
+    res.redirect("/api");
+});
+
 // create a new user account (POST localhost:5000/api/signup)
 appRoutes.post("/signup", function(req, res) {
     if (!req.body.name || !req.body.password) {
