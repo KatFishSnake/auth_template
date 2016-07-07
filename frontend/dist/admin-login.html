@@ -51,21 +51,6 @@
             return str.toString().replace(/[^\w\s\-\d]/gi, '');
         }
 
-        function setToken(token) {
-            if (!navigator.cookieEnabled) {
-                alert("Please enable cookie in your browser");
-                return;
-            }
-
-            var path = "/api/p/";
-            var cookie_str = "jwt=" + token + ";max-age=" + (5 * 60) + ";";
-
-            document.cookie = cookie_str;
-            console.info("User is logged in");
-
-            // window.location = "/api/p/list";
-        }
-
         /**
          *  Login user information
          */
@@ -81,11 +66,16 @@
                 var res = JSON.parse(this.responseText);
 
                 if (res.success) {
-                    if (res.token && (typeof res.token === "string")) {
-                        setToken(res.token);
-                    } else {
-                        alert("Sorry something wrong with server");
+                    if (!navigator.cookieEnabled) {
+                        alert("Please enable cookie in your browser");
+                        return;
                     }
+
+                    var conf = confirm("You are logged in");
+                    if (conf) { 
+                      window.location = "/api/p/list";
+                    }
+
                 } else {
                     alert(res.msg);
                 }

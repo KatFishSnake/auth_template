@@ -47,7 +47,9 @@ apiRoutes.post("/login", function(req, res) {
                 if (isMatch && !err) {
                     // if admin is found and password matches
                     var token = jwt.encode(admin, config.secret);
-                    res.json({ success: true, token: "JWT " + token });
+
+                    res.setHeader("Set-Cookie", "jwt=" + token + ";max-age=" + (5 * 60) + ";");
+                    res.json({ success: true });
                 } else {
                     res.send({ success: false, msg: 'Authentication failed. Wrong password.' });
                 }

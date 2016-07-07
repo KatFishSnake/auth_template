@@ -9,20 +9,8 @@ var jwt = require('jwt-simple');
 // bundle our routes
 var protectedRoutes = express.Router();
 
-// parse out the auth token
-var getToken = function(token) {
-    if (token && (typeof token === "string")) {
-        var parted = token.split(" ");
-        return ((parted.length === 2) ? parted[1] : null);
-    } else {
-        return null;
-    }
-}
-
 var cookieExtractor = function(req) {
     var token = null;
-    console.log("THIS IS A REQUEST!!!");
-    console.log(req);
     if (req && req.cookies) {
         token = req.cookies["jwt"];
     }
@@ -64,20 +52,13 @@ var cookieExtractor = function(req) {
 
 // route middleware to verify a token
 protectedRoutes.use(function(req, res, next) {
-
-    // check header or url parameters or post parameters for token
-    // var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
-    var token = getToken(cookieExtractor(req));
-
-    console.log("\n");
-    console.log(token);
-    console.log("\n");
+    var token = cookieExtractor(req);
 
     // decode token
     if (token) {
 
         var decoded = jwt.decode(token, config.secret);
+        
         Admin.findOne({
             name: decoded.name
         }, function(err, admin) {
@@ -104,7 +85,6 @@ protectedRoutes.use(function(req, res, next) {
         //         next();
         //     }
         // });
-
     } else {
 
         return res.status(403).send({
