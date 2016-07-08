@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Users</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Loading Bootstrap -->
+    <link href="/dist/css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Loading Flat UI -->
+    <link href="/dist/css/flat-ui.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/dist/img/favicon.ico">
+</head>
+
+<body>
+    <div class="container">
+        <nav class="navbar navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-01">
+                    <span class="sr-only">Toggle navigation</span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-collapse-01">
+                <a class="navbar-brand" href="#">Users</a>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/api/logout">Logout</a></li>
+                </ul>
+                <p class="navbar-text">Signed in as
+                    <a class="navbar-link" id="user-name" href="#"></a>
+                </p>
+            </div>
+        </nav>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <h4 id="title">List of all users in database</h4>
+                <ul id="users-list">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery (necessary for Flat UI's JavaScript plugins) -->
+    <script src="/dist/js/vendor/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/dist/js/vendor/video.js"></script>
+    <script src="/dist/js/flat-ui.min.js"></script>
+    <script type="text/javascript">
+    (function() {
+        var current_user = null;
+
+        function getCurrentUser() {
+            var url = "/api/me";
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+
+            xhr.onload = function() {
+                var res = JSON.parse(this.responseText);
+
+                if (res.success) {
+                    console.log(res);
+                    document.getElementById("user-name").textContent = res.data.name;
+                    current_user = res.data;
+
+                    if (res.data.is_admin) {
+                        getUsers();
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        function getUsers() {
+            var url = "/api/users";
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+
+            xhr.onload = function() {
+                var res = JSON.parse(this.responseText);
+
+                if (res.success) {
+                    console.log(res);
+                }
+            };
+            xhr.send();
+        }
+
+        getCurrentUser();
+    })();
+    </script>
+</body>
+
+</html>

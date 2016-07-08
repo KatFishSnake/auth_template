@@ -11,6 +11,18 @@ var UserSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    permission: {
+        type: Number,
+        default: 0
+    },
+    notes: {
+        type: Array,
+        default: []
+    },
+    updated: { 
+        type: Date, 
+        default: Date.now 
     }
 });
 

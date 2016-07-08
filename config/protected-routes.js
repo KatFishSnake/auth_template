@@ -1,10 +1,8 @@
 var path = require("path");
 var express = require("express");
-var passport = require('passport');
 var config = require('../config/database'); // get db config file
-// var User = require('../app/models/user'); // get the mongoose model
-var Admin = require('../app/models/admin'); // get the mongoose model
-var jwt = require('jwt-simple');
+var User = require('../app/models/user'); // get the mongoose model
+var jwt = require('jsonwebtoken');
 
 // bundle our routes
 var protectedRoutes = express.Router();
@@ -17,76 +15,29 @@ var cookieExtractor = function(req) {
     return token;
 };
 
-// ensure user is authenticated
-// function ensureAuthenticated(req, res, next) {
-//   if (req.isAuthenticated()) { return next(null); }
-//   res.redirect('/api/login')
-// }
-
-// protected routes
-// protectedRoutes.get(
-//     "api/p/list",
-//     passport.authenticate("jwt", { session: false, failureRedirect: "/api/login" }),
-//     function(req, res) {
-//         var token = getToken(req.headers);
-//         if (token) {
-// var decoded = jwt.decode(token, config.secret);
-// Admin.findOne({
-//     name: decoded.name
-// }, function(err, admin) {
-//     if (err) {
-//         throw err;
-//     }
-//     if (!admin) {
-//         return res.status(403).send({ success: false, msg: 'Authentication failed.' });
-//     } else {
-//         // Can be redirected here, its basicly the entrance to secured area
-//         // res.json({ success: true, msg: 'Welcome to api list ' + admin.name + '!' });
-//         res.sendFile(path.resolve("./frontend/dist/api-list.html"));
-//     }
-// });
-//         } else {
-//             return res.status(403).send({ success: false, msg: "No token provided." });
-//         }
-//     });
-
 // route middleware to verify a token
 protectedRoutes.use(function(req, res, next) {
     var token = cookieExtractor(req);
 
     // decode token
     if (token) {
+        var decoded = jwt.verify(token, config.secret);;
 
-        var decoded = jwt.decode(token, config.secret);
-        
-        Admin.findOne({
-            name: decoded.name
-        }, function(err, admin) {
+        User.findOne({
+            name: decoded._doc.name
+        }, function(err, user) {
             if (err) {
                 throw err;
             }
-            if (!admin) {
+            if (!user) {
                 return res.status(403).send({ success: false, msg: 'Authentication failed.' });
             } else {
                 // Can be redirected here, its basicly the entrance to secured area
-                // res.json({ success: true, msg: 'Welcome to api list ' + admin.name + '!' });
-                res.sendFile(path.resolve("./frontend/dist/api-list.html"));
+                res.sendFile(path.resolve("./frontend/dist/users.html"));
                 next();
             }
         });
-
-        // verifies secret and checks exp
-        // jwt.verify(token, config.secret, function(err, decoded) {
-        //     if (err) {
-        //         return res.json({ success: false, message: 'Failed to authenticate token.' });
-        //     } else {
-        //         // if everything is good, save to request for use in other routes
-        //         req.decoded = decoded;
-        //         next();
-        //     }
-        // });
     } else {
-
         return res.status(403).send({
             success: false,
             message: "No token provided."
@@ -94,8 +45,8 @@ protectedRoutes.use(function(req, res, next) {
     }
 });
 
-protectedRoutes.get("/list", function(req, res) {
-        res.sendFile(path.resolve("./frontend/dist/api-list.html"));
+protectedRoutes.get("/users", function(req, res) {
+    res.sendFile(path.resolve("./frontend/dist/users.html"));
 });
 
 module.exports = protectedRoutes;

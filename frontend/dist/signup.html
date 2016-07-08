@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Login</title>
+    <title>SignUp</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Loading Bootstrap -->
     <link href="/dist/css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -11,26 +11,39 @@
     <link href="/dist/css/flat-ui.min.css" rel="stylesheet">
     <link rel="shortcut icon" href="/dist/img/favicon.ico">
     <style type="text/css">
-      body .container {
-        max-width: 40rem;
+    @media (max-width: 900px) {
+        body .container {
+            max-width: 40rem;
+        }
+    }
+    
+    body .container {
         padding-top: 10rem;
-      }
+    }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <div class="row" >
+        <div class="row">
             <div class="col-md-6 col-md-offset-3">
-                <h4>Please LogIn</h4>
-                <form role="form" id="login-form" action="" name="login-form" autocomplete="off">
+                <h4>Please SignUp</h4>
+                <form role="form" id="signup-form" action="" name="signup-form" autocomplete="off">
                     <div class="form-group">
                         <input type="text" name="username" autocomplete="off" class="form-control" placeholder="Enter name" required>
                     </div>
                     <div class="form-group">
                         <input type="password" name="password" autocomplete="off" class="form-control" placeholder="Password" required>
                     </div>
-                    <button type="submit" value="LoginInfo" class="btn btn-lg btn-primary btn-block">Log In</button>
+                    <div class="form-group">
+                        <label class="checkbox" for="checkbox1">
+                            <input type="checkbox" name="admin" autocomplete="off" value="" id="checkbox1" data-toggle="checkbox"> Is user an admin?
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <input type="secret" name="secret" autocomplete="off" class="form-control" placeholder="Secret admin key">
+                    </div>
+                    <button type="submit" value="SignUpInfo" class="btn btn-lg btn-primary btn-block">Sign Up</button>
                 </form>
             </div>
         </div>
@@ -41,8 +54,17 @@
     <script src="/dist/js/vendor/video.js"></script>
     <script src="/dist/js/flat-ui.min.js"></script>
     <script type="text/javascript">
+    $(':checkbox').radiocheck();
+    </script>
+    <script type="text/javascript">
     (function() {
-        var form_el = document.getElementById("login-form");
+        var form_el = document.getElementById("signup-form");
+
+        var admin = false;
+
+        $('#checkbox1:checkbox').on('change.radiocheck', function() {
+            admin = !admin;
+        });
 
         /**
          * Sanitize text string
@@ -52,10 +74,10 @@
         }
 
         /**
-         *  Login user information
+         *  Signup user information
          */
-        function login(content) {
-            var url = "/api/login";
+        function signup(content) {
+            var url = "/api/signup";
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, true);
 
@@ -66,16 +88,10 @@
                 var res = JSON.parse(this.responseText);
 
                 if (res.success) {
-                    if (!navigator.cookieEnabled) {
-                        alert("Please enable cookie in your browser");
-                        return;
+                    var conf = confirm(res.msg);
+                    if (conf) {
+                        window.location = "/api/login"
                     }
-
-                    var conf = confirm("You are logged in");
-                    if (conf) { 
-                      window.location = "/api/p/list";
-                    }
-
                 } else {
                     alert(res.msg);
                 }
@@ -86,20 +102,27 @@
         function setListeners() {
             form_el.addEventListener("submit", function(e) {
 
+                var is_admin = admin ? 1 : 0;
+
                 // Get values
                 var values = {
                     name: sanitizeText(form_el.username.value),
                     password: sanitizeText(form_el.password.value),
+                    key: sanitizeText(form_el.secret.value),
+                    permission: is_admin
                 };
 
                 // Set form prestine
                 form_el.username.value = "";
                 form_el.password.value = "";
+                form_el.secret.value = "";
+
+                $('checkbox1:checkbox').radiocheck('toggle');
 
                 e.preventDefault();
 
                 // Send an email to the host
-                login(JSON.stringify(values));
+                signup(JSON.stringify(values));
             });
         }
 
