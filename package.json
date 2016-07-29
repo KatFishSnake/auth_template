@@ -1,5 +1,5 @@
 {
-  "name": "node-rest-auth",
+  "name": "node-auth",
   "main": "server.js",
   "scripts": {
     "start": "./node_modules/nodemon/bin/nodemon.js server.js"

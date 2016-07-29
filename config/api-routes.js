@@ -116,29 +116,29 @@ apiRoutes.post("/signup", function(req, res) {
 
 apiRoutes.get('/me', isAuthenticated, function(req, res) {
 
-        var token = cookieExtractor(req);
+    var token = cookieExtractor(req);
 
-        // decode token
-        if (token) {
-            var decoded = jwt.verify(token, config.secret);;
-            User.findOne({
-                name: decoded._doc.name
-            }, function(err, user) {
-                if (err) {
-                    throw err;
-                }
-                if (!user) {
-                    return res.status(403).send({ success: false, msg: 'No user found.' });
-                } else {
-                    res.json({ success: true, data: {name: user.name, is_admin: Boolean(user.permission)} });
-                }
-            });
-        } else {
-            return res.status(403).send({
-                success: false,
-                message: "No user found."
-            });
-        }
+    // decode token
+    if (token) {
+        var decoded = jwt.verify(token, config.secret);;
+        User.findOne({
+            name: decoded._doc.name
+        }, function(err, user) {
+            if (err) {
+                throw err;
+            }
+            if (!user) {
+                return res.status(403).send({ success: false, msg: 'No user found.' });
+            } else {
+                res.json({ success: true, data: { name: user.name, is_admin: Boolean(user.permission) } });
+            }
+        });
+    } else {
+        return res.status(403).send({
+            success: false,
+            message: "No user found."
+        });
+    }
 });
 
 

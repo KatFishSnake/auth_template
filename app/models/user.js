@@ -20,9 +20,9 @@ var UserSchema = new Schema({
         type: Array,
         default: []
     },
-    updated: { 
-        type: Date, 
-        default: Date.now 
+    updated: {
+        type: Date,
+        default: Date.now
     }
 });
 
@@ -50,7 +50,7 @@ UserSchema.pre("save", function(next) {
 UserSchema.methods.comparePassword = function(passw, cb) {
     bcrypt.compare(passw, this.password, function(err, isMatch) {
         if (err) {
-            return cb(err); 
+            return cb(err);
         }
 
         cb(null, isMatch);
